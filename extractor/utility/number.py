@@ -19,9 +19,9 @@ def num2chinese(num, big=False, simp=True, o=False, twoalt=False):
   # check num first
   nd = str(num)
   if abs(float(nd)) >= 1e48:
-    raise ValueError('number out of range')
+    return None
   elif 'e' in nd:
-    raise ValueError('scientific notation is not supported')
+    return None
   c_symbol = '正负点' if simp else '正負點'
   if o:  # formal
     twoalt = False
@@ -97,6 +97,11 @@ conversion = {'零':0, '一':1, '二':2, '两':2, '三':3, '四':4, '五':5, '�
                 '壹':1, '贰':2, '叁':3, '肆':4, '伍':5, '陆':6, '柒':7, '捌':8, '玖':9, '拾':10, '佰':100, '仟':1000, '萬':10000,
        '亿':100000000}
 def chinese2num(a):
+  if re.match('[0-9]+', a):
+    try:
+      return int(a)
+    except:
+      return None
   count = 0
   result = 0
   tmp = 0
@@ -110,7 +115,7 @@ def chinese2num(a):
     #print tmpChr
     tmpNum = conversion.get(tmpChr, None)
     if tmpNum is None:
-      raise Exception('Invalid number format.')
+      return None
     #如果等于1亿
     if tmpNum == 100000000:
       result = result + tmp
