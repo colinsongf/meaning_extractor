@@ -60,7 +60,8 @@ class Aggregate(object):
   # Do not touch or override below
 
   __REGEX_SLOT_VARIABLES = r'[_a-z]\w*'
-  __REGEX_SLOT = r'\{{(?P<slot_key>{}):(?P<slot_type>{})\}}'.format(__REGEX_SLOT_VARIABLES, __REGEX_SLOT_VARIABLES)
+  __REGEX_SLOT = r'\{{(?P<slot_key>{}):(?P<slot_type>{})\}}'.format(
+    __REGEX_SLOT_VARIABLES, __REGEX_SLOT_VARIABLES)
 
   __REGEX_ALTERNATIVES = r'\[(\w*(\|\w*)*)\]'
   __REGEX_ALTERNATIVES_STD = lambda o: r'(?:{})'.format('|'.join(sorted(o.group(1).split('|'), key=len, reverse=True)))
@@ -95,7 +96,10 @@ class Aggregate(object):
       slot_keys.add(slot_key)
 
       previous_slot_end = var.span(0)[1]
-      return r'(?P<{}>\w+?)'.format(capture_group_name) if new_capture_group else r''
+      regex_replace = r'(?P<{}>\w+)' # \
+        # if (previous_slot_end == len(expr) or not expr[previous_slot_end].isalnum()) else r'(?P<{}>\w+?)'
+
+      return regex_replace.format(capture_group_name) if new_capture_group else r''
 
     expr = re.sub(cls.__REGEX_SLOT, repl, expr)
     expr = r'{}'.format(expr)
@@ -234,8 +238,8 @@ class Aggregate(object):
               # 0, ('s0', [('timestamp', 'type_datetime'), ('num_people', 'type_people')])
               aggregate_path, solutions = [], []
               num_sub_slots_to_be_matched += len(slots)
-              cls.__consume_recursive(query, match_obj.span(capture_group_name)[0], match_obj.span(capture_group_name)[1],
-                slots, 0, aggregate_path, solutions)
+              cls.__consume_recursive(query, match_obj.span(capture_group_name)[0],
+                match_obj.span(capture_group_name)[1], slots, 0, aggregate_path, solutions)
               for solution in solutions:
                 if match_obj.span(0)[1] == match_obj.span(capture_group_name)[1]:
                   slot_match_end = solution[-1].end
@@ -244,6 +248,7 @@ class Aggregate(object):
                 for (slot_i, (slot_key, slot_type)) in enumerate(slots):
                   solution[slot_i].set_slot_key(slot_key)
                   slot_key_value_mappings[slot_key] = solution[slot_i]
+
             if len(slot_key_value_mappings) != num_sub_slots_to_be_matched:
               continue
             if callable(cls._resolve):

@@ -37,4 +37,7 @@ class STTime(Aggregate):
     dttm = datetime.combine(date.today(), time(hour, minute, second))
     if 'am_pm' in mp:
       dttm = mp['am_pm'].slot_value(dttm)
+    else:
+      if 0 < dttm.time().hour < 6:
+        dttm += timedelta(hours=12)
     return dttm + offset
