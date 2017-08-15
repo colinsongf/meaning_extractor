@@ -5,8 +5,6 @@ from extractor.utility.number import regex_number, chinese2num
 
 from datetime import datetime, date, time, timedelta
 
-import re
-
 class STAmPm(Base):
 
   _slot_type_identifier = 'st_am_pm'
@@ -24,7 +22,7 @@ class STAmPm(Base):
     'ev_yes' : ['昨晚'],
   }
 
-  _resolve = lambda identifier, synonym_matching, matched_obj : STAmPm.__apply_am_pm_to_datetime(identifier)
+  _resolve_base = lambda identifier, synonym_matching, match_obj : STAmPm.__apply_am_pm_to_datetime(identifier)
 
   @staticmethod
   def __apply_am_pm_to_datetime(identifier):

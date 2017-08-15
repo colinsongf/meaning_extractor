@@ -24,7 +24,7 @@ class STDate(Aggregate):
     'day_explicit' : ['({year:st_number}年)({month:st_number}月)({day:st_number}[日|号])']
   }
 
-  _resolve = {
+  _resolve_aggregate = {
     '0' :  lambda *args: date.today(),
     '+1' : lambda *args: date.today() + timedelta(days=1),
     '+2' : lambda *args: date.today() + timedelta(days=2),
@@ -32,10 +32,10 @@ class STDate(Aggregate):
     '-1' : lambda *args: date.today() - timedelta(days=1),
     '-2' : lambda *args: date.today() - timedelta(days=2),
     '-7' : lambda *args: date.today() - timedelta(days=7),
-    'day_of_this_week' : lambda _0, _1, match_obj, _2: STDate.__day_of_week_func(match_obj, 0),
-    'day_of_last_week' : lambda _0, _1, match_obj, _2: STDate.__day_of_week_func(match_obj, -1),
-    'day_of_next_week' : lambda _0, _1, match_obj, _2: STDate.__day_of_week_func(match_obj, 1),
-    'day_explicit' : lambda _0, _1, _2, mp: STDate.__date_from_year_ymd(mp),
+    'day_of_this_week' : lambda _0, _1, _2, end, consumed, mp: STDate.__day_of_week_func(consumed, 0),
+    'day_of_last_week' : lambda _0, _1, _2, end, consumed, mp: STDate.__day_of_week_func(consumed, -1),
+    'day_of_next_week' : lambda _0, _1, _2, end, consumed, mp: STDate.__day_of_week_func(consumed, 1),
+    'day_explicit' : lambda _0, _1, _2, end, consumed, mp: STDate.__date_from_year_ymd(mp),
   }
 
   __day_mapping = {
@@ -51,11 +51,10 @@ class STDate(Aggregate):
   }
 
   @classmethod
-  def __day_of_week_func(cls, match_obj, week_delta):
-    raw_str = match_obj.group(0)
+  def __day_of_week_func(cls, consumed, week_delta):
     today = date.today()
     one_week = timedelta(days=7)
-    target_weekday = cls.__day_mapping[raw_str[-1]]
+    target_weekday = cls.__day_mapping[consumed[-1]]
     today_weekday = today.weekday()
     tentative = today + timedelta((target_weekday - today_weekday) % 7)
     if today_weekday <= target_weekday:
@@ -65,11 +64,14 @@ class STDate(Aggregate):
 
   @classmethod
   def __date_from_year_ymd(cls, mp):
-    dt = date.today()
-    if 'year' in mp:
-      dt = dt.replace(year=mp['year'].slot_value)
-    if 'month' in mp:
-      dt = dt.replace(month=mp['month'].slot_value)
-    if 'day' in mp:
-      dt = dt.replace(day=mp['day'].slot_value)
-    return dt
+    try:
+      dt = date.today()
+      if 'year' in mp:
+        dt = dt.replace(year=mp['year'].slot_value)
+      if 'month' in mp:
+        dt = dt.replace(month=mp['month'].slot_value)
+      if 'day' in mp:
+        dt = dt.replace(day=mp['day'].slot_value)
+      return dt
+    except:
+      return None

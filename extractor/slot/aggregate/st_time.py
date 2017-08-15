@@ -17,27 +17,30 @@ class STTime(Aggregate):
     'hour_quarter_3' : ['({am_pm:st_am_pm}){hour:st_number}[点|时]三刻'],
   }
 
-  _resolve = {
+  _resolve_aggregate = {
     'now' : lambda *args: datetime.now(),
-    'time_explicit' : lambda _0, _1, _2, mp: STTime.__time_from_hms(mp),
-    'hour_whole' : lambda _0, _1, _2, mp: STTime.__time_from_hms(mp),
-    'hour_half' : lambda _0, _1, _2, mp: STTime.__time_from_hms(mp, timedelta(minutes=30)),
-    'hour_quarter_1' : lambda _0, _1, _2, mp: STTime.__time_from_hms(mp, timedelta(minutes=15)),
-    'hour_quarter_3' : lambda _0, _1, _2, mp: STTime.__time_from_hms(mp, timedelta(minutes=45)),
+    'time_explicit' : lambda _0, _1, _2, end, consumed, mp: STTime.__time_from_hms(mp),
+    'hour_whole' : lambda _0, _1, _2, end, consumed, mp: STTime.__time_from_hms(mp),
+    'hour_half' : lambda _0, _1, _2, end, consumed, mp: STTime.__time_from_hms(mp, timedelta(minutes=30)),
+    'hour_quarter_1' : lambda _0, _1, _2, end, consumed, mp: STTime.__time_from_hms(mp, timedelta(minutes=15)),
+    'hour_quarter_3' : lambda _0, _1, _2, end, consumed, mp: STTime.__time_from_hms(mp, timedelta(minutes=45)),
   }
 
   @classmethod
   def __time_from_hms(cls, mp, offset=None):
-    if offset is None:
-      offset = timedelta(seconds=0)
+    try:
+      if offset is None:
+        offset = timedelta(seconds=0)
 
-    hour = mp['hour'].slot_value if 'hour' in mp else 0
-    minute = mp['minute'].slot_value if 'minute' in mp else 0
-    second = mp['second'].slot_value if 'second' in mp else 0
-    dttm = datetime.combine(date.today(), time(hour, minute, second))
-    if 'am_pm' in mp:
-      dttm = mp['am_pm'].slot_value(dttm)
-    else:
-      if 0 < dttm.time().hour < 6:
-        dttm += timedelta(hours=12)
-    return dttm + offset
+      hour = mp['hour'].slot_value if 'hour' in mp else 0
+      minute = mp['minute'].slot_value if 'minute' in mp else 0
+      second = mp['second'].slot_value if 'second' in mp else 0
+      dttm = datetime.combine(date.today(), time(hour, minute, second))
+      if 'am_pm' in mp:
+        dttm = mp['am_pm'].slot_value(dttm)
+      else:
+        if 0 < dttm.time().hour < 6:
+          dttm += timedelta(hours=12)
+      return dttm + offset
+    except:
+      return None
