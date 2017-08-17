@@ -103,7 +103,7 @@ class MatchSegmentSlot(MatchSegment):
       slot_class = Slot.with_identifier(self.slot_type)
       all_matches = slot_class.consume(query, start, greedy=False)
     else:
-      for end in range(start, len(query) + 1):
+      for end in range(start + 1, len(query) + 1):
         all_matches.append(MatchSlot(query, start, end, STAny, query[start:end], '*', '*', dict(), []))
     for match in all_matches:
       match.set_slot_key(self.slot_key)

@@ -10,7 +10,8 @@ class STCityCHN(Base):
     'shenzhen' : ['深圳'],
     'shanghai' : ['上海', '魔都'],
     'beijing' : ['北京', '帝都'],
+    'guangzhou' : ['广州'],
     # TODO: ...
   }
 
-  _resolve_base = lambda identifier, synonym_matching, match_obj : chinese2num(matched_obj.group(0))
+  _resolve_base = lambda identifier, synonym_matching, match_obj : identifier

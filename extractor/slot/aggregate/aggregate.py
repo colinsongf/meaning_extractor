@@ -142,7 +142,8 @@ class Aggregate(object):
                 match_end, query[:match_end], slot_key_value_mappings)
             if slot_value is not None:
               all_matches.append(MatchSlot(
-                query, start, match_end, cls, slot_value, cls._rules[identifier][rule_i], rule, slot_key_value_mappings, solution))
+                query, start, match_end, cls, slot_value, cls._rules[identifier][rule_i], rule,
+                slot_key_value_mappings, solution))
 
     if not all_matches or not greedy:
       return all_matches

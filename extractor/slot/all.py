@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from extractor.slot.base.st_am_pm import STAmPm
+from extractor.slot.base.st_city_chn import STCityCHN
 from extractor.slot.base.st_number import STNumber
 from extractor.slot.aggregate.st_date import STDate
 from extractor.slot.aggregate.st_datetime import STDateTime
@@ -8,7 +9,7 @@ from extractor.slot.aggregate.st_time import STTime
 
 class Slot(object):
 
-  __all_slot_cls = [STAmPm, STDate, STDateTime, STNumber, STTime]
+  __all_slot_cls = [STAmPm, STDate, STDateTime, STNumber, STTime, STCityCHN]
 
   __all_slot_mapping = dict()
 
